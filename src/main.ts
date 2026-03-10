@@ -26,6 +26,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <p class="mt-2 text-base-content/75">Edit <code class="rounded bg-base-200 px-2 py-1">src/main.ts</code> and save to test <code class="rounded bg-base-200 px-2 py-1">HMR</code></p>
         </div>
         <a href="/bytecount.html" class="btn btn-outline btn-secondary">Open Bytecount</a>
+        <a href="/runecount.html" class="btn btn-outline">Open Runecount</a>
         <button id="counter" type="button" class="btn btn-primary"></button>
       </div>
     </div>
