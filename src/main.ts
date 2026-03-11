@@ -25,6 +25,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <a href="/upside-down.html" class="btn btn-primary">Upside Down</a>
           <div class="ps-2">flip text upside down</div>
         </div>
+        <div class="flex flex-row items-center">
+          <a href="/urlencode.html" class="btn btn-primary">URL Encode</a>
+          <div class="ps-2">encode and decode URL-escaped text</div>
+        </div>
       </div>
     </div>
 

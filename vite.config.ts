@@ -12,6 +12,7 @@ export default defineConfig({
         runecount: resolve(__dirname, 'runecount.html'),
         asciify: resolve(__dirname, 'asciify.html'),
         upsideDown: resolve(__dirname, 'upside-down.html'),
+        urlencode: resolve(__dirname, 'urlencode.html'),
       },
     },
   },
