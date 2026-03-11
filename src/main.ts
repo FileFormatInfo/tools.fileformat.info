@@ -10,6 +10,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div class="hero rounded-box border border-base-300 bg-base-100 shadow-sm">
       <div class="hero-content flex-col py-10 w-full items-start">
         <div class="flex flex-row items-center">
+          <a href="/asciify.html" class="btn btn-primary">Asciify</a>
+          <div class="ps-2">convert text to plain ASCII</div>
+        </div>
+        <div class="flex flex-row items-center">
           <a href="/bytecount.html" class="btn btn-primary">Byte Count</a>
           <div class="ps-2">count which bytes are in a file</div>
         </div>

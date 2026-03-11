@@ -10,6 +10,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         bytecount: resolve(__dirname, 'bytecount.html'),
         runecount: resolve(__dirname, 'runecount.html'),
+        asciify: resolve(__dirname, 'asciify.html'),
       },
     },
   },
