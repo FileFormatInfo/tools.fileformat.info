@@ -11,39 +11,29 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     ${renderHeader()}
 
     <div class="hero rounded-box border border-base-300 bg-base-100 shadow-sm">
-      <div class="hero-content flex-col py-10 text-center">
-        <div class="avatar">
-          <div class="w-24 rounded-2xl bg-base-200 p-2">
-            <img src="${heroImg}" alt="Starter illustration" />
-          </div>
+      <div class="hero-content flex-col py-10 w-full items-start">
+        <div class="flex flex-row items-center">
+          <a href="/bytecount.html" class="btn btn-primary">Byte Count</a>
+          <div class="ps-2">count which bytes are in a file</div>
         </div>
-        <div class="flex items-center justify-center gap-3">
-          <img src="${typescriptLogo}" alt="TypeScript logo" class="h-8 w-8" />
-          <img src="${viteLogo}" alt="Vite logo" class="h-8 w-8" />
+        <div class="flex flex-row items-center">
+          <a href="/runecount.html" class="btn btn-primary">Rune Count</a>
+          <div class="ps-2">count which characters are in a file</div>
         </div>
-        <div>
-          <h1 class="text-4xl font-bold">Get started</h1>
-          <p class="mt-2 text-base-content/75">Edit <code class="rounded bg-base-200 px-2 py-1">src/main.ts</code> and save to test <code class="rounded bg-base-200 px-2 py-1">HMR</code></p>
-        </div>
-        <a href="/bytecount.html" class="btn btn-outline btn-secondary">Open Bytecount</a>
-        <a href="/runecount.html" class="btn btn-outline">Open Runecount</a>
-        <button id="counter" type="button" class="btn btn-primary"></button>
       </div>
     </div>
 
     <section class="grid grid-cols-1 gap-4 md:grid-cols-2">
       <article class="card border border-base-300 bg-base-100 shadow-sm">
         <div class="card-body">
-          <h2 class="card-title">Documentation</h2>
-          <p class="text-base-content/70">Your questions, answered</p>
+          <h2 class="card-title">Command line</h2>
+          <p class="text-base-content/70">Need to run locally or in CI?  Try the command line versions!</p>
           <div class="card-actions mt-2">
-            <a href="https://vite.dev/" target="_blank" rel="noreferrer" class="btn btn-outline btn-sm">
-              <img src="${viteLogo}" alt="" class="h-4 w-4" />
-              Explore Vite
+            <a href="https://github.com/FileFormatInfo/fftools?tab=readme-ov-file#programs" class="btn btn-sm">
+              Documentation
             </a>
-            <a href="https://www.typescriptlang.org" target="_blank" rel="noreferrer" class="btn btn-outline btn-sm">
-              <img src="${typescriptLogo}" alt="" class="h-4 w-4" />
-              Learn more
+            <a href="https://github.com/FileFormatInfo/fftools/releases/latest" class="btn btn-sm">
+              Downloads
             </a>
           </div>
         </div>
@@ -51,13 +41,13 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
       <article class="card border border-base-300 bg-base-100 shadow-sm">
         <div class="card-body">
-          <h2 class="card-title">Connect with us</h2>
-          <p class="text-base-content/70">Join the Vite community</p>
+          <h2 class="card-title">More useful stuff</h2>
+          <p class="text-base-content/70">Other things I've made</p>
           <div class="mt-2 flex flex-wrap gap-2">
-            <a href="https://github.com/vitejs/vite" target="_blank" rel="noreferrer" class="btn btn-sm">GitHub</a>
-            <a href="https://chat.vite.dev/" target="_blank" rel="noreferrer" class="btn btn-sm">Discord</a>
-            <a href="https://x.com/vite_js" target="_blank" rel="noreferrer" class="btn btn-sm">X.com</a>
-            <a href="https://bsky.app/profile/vite.dev" target="_blank" rel="noreferrer" class="btn btn-sm">Bluesky</a>
+            <a href="https://www.fileformat.info/" class="btn btn-sm">File Formats</a>
+            <a href="https://resolve.rs/" class="btn btn-sm">Networking</a>
+            <a href="https://www.regexplanet.com/" class="btn btn-sm">Regex</a>
+            <a href="https://www.vectorlogo.zone/" class="btn btn-sm">Logos</a>
           </div>
         </div>
       </article>
