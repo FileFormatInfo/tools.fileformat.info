@@ -13,6 +13,7 @@ export default defineConfig({
         asciify: resolve(__dirname, 'asciify.html'),
         upsideDown: resolve(__dirname, 'upside-down.html'),
         urlencode: resolve(__dirname, 'urlencode.html'),
+        strings: resolve(__dirname, 'strings.html'),
       },
     },
   },

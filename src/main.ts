@@ -22,6 +22,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <div class="ps-2">count which characters are in a file</div>
         </div>
         <div class="flex flex-row items-center">
+          <a href="/strings.html" class="btn btn-primary">Strings</a>
+          <div class="ps-2">extract readable strings from a binary file</div>
+        </div>
+        <div class="flex flex-row items-center">
           <a href="/upside-down.html" class="btn btn-primary">Upside Down</a>
           <div class="ps-2">flip text upside down</div>
         </div>
