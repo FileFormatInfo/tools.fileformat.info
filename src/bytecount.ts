@@ -40,7 +40,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
             <thead>
               <tr>
                 <th class="text-center">ASCII</th>
-                <th class="text-center">Byte</th>
+                <th class="text-center">Decimal</th>
+                <th class="text-center">Hex</th>
                 <th class="text-right">Count</th>
                 <th class="text-right">First</th>
                 <th class="text-right">Last</th>
@@ -154,6 +155,7 @@ const toAsciiDisplay = (byte: number): string => {
 }
 
   const formatOffsetHex = (offset: number): string => `0x${offset.toString(16).toUpperCase().padStart(4, '0')}`
+  const formatByteHex = (byte: number): string => `0x${byte.toString(16).toUpperCase().padStart(2, '0')}`
 
   const formatOffsetTitle = (offset: number): string => `${offset.toLocaleString()} (decimal)`
 
@@ -168,7 +170,7 @@ const renderByteCountTable = (byteCounts: Map<number, ByteStats>, totalBytes: nu
     .sort(([left], [right]) => left - right)
     .map(
       ([byte, stats]) =>
-        `<tr><td class="text-center">${toAsciiDisplay(byte)}</td><td class="text-center">${byte}</td><td class="text-right">${formatCount(stats.count)}</td><td class="text-right" title="${formatOffsetTitle(stats.first)}">${formatOffsetHex(stats.first)}</td><td class="text-right" title="${formatOffsetTitle(stats.last)}">${formatOffsetHex(stats.last)}</td></tr>`,
+        `<tr><td class="text-center">${toAsciiDisplay(byte)}</td><td class="text-center">${byte}</td><td class="text-center">${formatByteHex(byte)}</td><td class="text-right">${formatCount(stats.count)}</td><td class="text-right" title="${formatOffsetTitle(stats.first)}">${formatOffsetHex(stats.first)}</td><td class="text-right" title="${formatOffsetTitle(stats.last)}">${formatOffsetHex(stats.last)}</td></tr>`,
     )
 
   resultsBody.innerHTML = rows.join('')
