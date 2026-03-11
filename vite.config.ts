@@ -11,6 +11,7 @@ export default defineConfig({
         bytecount: resolve(__dirname, 'bytecount.html'),
         runecount: resolve(__dirname, 'runecount.html'),
         asciify: resolve(__dirname, 'asciify.html'),
+        upsideDown: resolve(__dirname, 'upside-down.html'),
       },
     },
   },

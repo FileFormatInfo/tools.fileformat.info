@@ -24,6 +24,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           </div>
           <textarea id="output-text" class="textarea textarea-bordered min-h-40 w-full" readonly></textarea>
         </label>
+
+        <div>
+          <button id="copy-button" type="button" class="btn btn-sm">Copy to clipboard</button>
+        </div>
       </form>
     </section>
   </section>
@@ -32,6 +36,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 const inputText = document.querySelector<HTMLTextAreaElement>('#input-text')
 const outputText = document.querySelector<HTMLTextAreaElement>('#output-text')
+const copyButton = document.querySelector<HTMLButtonElement>('#copy-button')
 
 type AnyAsciiFn = (value: string) => string
 let anyAsciiPromise: Promise<AnyAsciiFn> | undefined
@@ -57,3 +62,20 @@ inputText?.addEventListener('input', () => {
   void updateOutput()
 })
 void updateOutput()
+
+copyButton?.addEventListener('click', async () => {
+  if (!outputText) {
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(outputText.value)
+    copyButton.textContent = 'Copied!'
+  } catch {
+    copyButton.textContent = 'Copy failed'
+  }
+
+  window.setTimeout(() => {
+    copyButton.textContent = 'Copy to clipboard'
+  }, 1500)
+})
