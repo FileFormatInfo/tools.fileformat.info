@@ -18,6 +18,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <div class="ps-2">count which bytes are in a file</div>
         </div>
         <div class="flex flex-row items-center">
+          <a href="/haikunator.html" class="btn btn-primary">Haikunator</a>
+          <div class="ps-2">generate random Heroku-style names</div>
+        </div>
+        <div class="flex flex-row items-center">
           <a href="/runecount.html" class="btn btn-primary">Rune Count</a>
           <div class="ps-2">count which characters are in a file</div>
         </div>
