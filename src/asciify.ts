@@ -1,14 +1,59 @@
 import './style.css'
 import { renderHeader } from './components/header.ts'
 
+const demoSamples = [
+  'French (Latin): René François Lacôte',
+  'German (Latin): Blöße',
+  'Vietnamese (Latin): Trần Hưng Đạo',
+  'Norwegian (Latin): Nærøy',
+  'Ancient Greek (Greek): Φειδιππίδης',
+  'Modern Greek (Greek): Δημήτρης Φωτόπουλος',
+  'Russian (Cyrillic): Борис Николаевич Ельцин',
+  'Ukrainian (Cyrillic): Володимир Горбулін',
+  'Bulgarian (Cyrillic): Търговище',
+  'Mandarin Chinese (Han): 深圳',
+  'Cantonese Chinese (Han): 深水埗',
+  'Korean (Hangul): 화성시',
+  'Korean (Han): 華城市',
+  'Japanese (Hiragana): さいたま',
+  'Japanese (Han): 埼玉県',
+  'Amharic (Ethiopic): ደብረ ዘይት',
+  'Tigrinya (Ethiopic): ደቀምሓረ',
+  'Arabic: دمنهور',
+  'Armenian: Աբովյան',
+  'Georgian: სამტრედია',
+  'Hebrew: אברהם הלוי פרנקל',
+  'Unified English Braille (Braille): ⠠⠎⠁⠽⠀⠭⠀⠁⠛',
+  'Bengali: ময়মনসিংহ',
+  'Burmese (Myanmar): ထန်တလန်',
+  'Gujarati: પોરબંદર',
+  'Hindi (Devanagari): महासमुंद',
+  'Kannada: ಬೆಂಗಳೂರು',
+  'Khmer: សៀមរាប',
+  'Lao: ສະຫວັນນະເຂດ',
+  'Malayalam: കളമശ്ശേരി',
+  'Odia: ଗଜପତି',
+  'Punjabi (Gurmukhi): ਜਲੰਧਰ',
+  'Sinhala: රත්නපුර',
+  'Tamil: கன்னியாகுமரி',
+  'Telugu: శ్రీకాకుళం',
+  'Thai: สงขลา',
+  'Emojis: 👑 🌴',
+  'Misc.: ☆ ♯ ♰ ⚄ ⛌',
+  'Letterlike: № ℳ ⅋ ⅍',
+]
+
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <main class="min-h-screen bg-base-200" data-theme="light">
   <section class="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8 md:px-8 md:py-12">
     ${renderHeader()}
 
     <section class="rounded-box border border-base-300 bg-base-100 p-8 shadow-sm">
-      <h1 class="text-3xl font-bold">Asciify</h1>
-      <p class="mt-3 text-base-content/70">Type text below to convert it to ASCII in your browser.</p>
+      <div class="flex items-center justify-between gap-3">
+        <h1 class="text-3xl font-bold">Asciify</h1>
+        <button id="demo-button" type="button" class="btn btn-sm">Demo</button>
+      </div>
+      <p class="mt-3 text-base-content/70">Type text below to convert it to ASCII using <a href="https://github.com/anyascii/anyascii">AnyAscii</a>.</p>
 
       <form class="mt-6 flex flex-col gap-4" action="#" method="post" onsubmit="return false;">
         <label class="form-control w-full">
@@ -37,6 +82,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 const inputText = document.querySelector<HTMLTextAreaElement>('#input-text')
 const outputText = document.querySelector<HTMLTextAreaElement>('#output-text')
 const copyButton = document.querySelector<HTMLButtonElement>('#copy-button')
+const demoButton = document.querySelector<HTMLButtonElement>('#demo-button')
 
 type AnyAsciiFn = (value: string) => string
 let anyAsciiPromise: Promise<AnyAsciiFn> | undefined
@@ -62,6 +108,16 @@ inputText?.addEventListener('input', () => {
   void updateOutput()
 })
 void updateOutput()
+
+demoButton?.addEventListener('click', () => {
+  if (!inputText) {
+    return
+  }
+
+  const randomIndex = Math.floor(Math.random() * demoSamples.length)
+  inputText.value = demoSamples[randomIndex]
+  void updateOutput()
+})
 
 copyButton?.addEventListener('click', async () => {
   if (!outputText) {
