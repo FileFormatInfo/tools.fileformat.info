@@ -82,8 +82,11 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
       <form class="mt-6 flex flex-col gap-4" action="#" method="post" onsubmit="return false;">
         <label class="form-control w-full">
-          <div class="label">
+          <div class="label w-full items-center">
             <span class="label-text">Input text</span>
+            <button id="clear-button" type="button" class="btn btn-sm ml-auto">
+              Clear
+            </button>
           </div>
           <textarea id="input-text" class="textarea textarea-bordered min-h-40 w-full" placeholder="Paste or type text here"></textarea>
         </label>
@@ -108,6 +111,7 @@ const inputText = document.querySelector<HTMLTextAreaElement>('#input-text')
 const outputText = document.querySelector<HTMLTextAreaElement>('#output-text')
 const copyButton = document.querySelector<HTMLButtonElement>('#copy-button')
 const demoButton = document.querySelector<HTMLButtonElement>('#demo-button')
+const clearButton = document.querySelector<HTMLButtonElement>('#clear-button')
 
 const extractFortuneRaw = (payload: unknown): string | null => {
   if (!payload || typeof payload !== 'object') {
@@ -177,6 +181,7 @@ const updateOutput = () => {
 
 inputText?.addEventListener('input', updateOutput)
 updateOutput()
+inputText?.focus()
 
 demoButton?.addEventListener('click', async () => {
   if (!inputText) {
@@ -216,4 +221,35 @@ copyButton?.addEventListener('click', async () => {
   window.setTimeout(() => {
     copyButton.textContent = 'Copy to clipboard'
   }, 1500)
+})
+
+clearButton?.addEventListener('click', () => {
+  if (!inputText) {
+    return
+  }
+
+  inputText.value = ''
+  inputText.focus()
+  updateOutput()
+})
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape' || !inputText) {
+    return
+  }
+
+  const activeElement = document.activeElement
+  if (
+    activeElement instanceof HTMLElement &&
+    activeElement !== inputText &&
+    (activeElement.tagName === 'INPUT' ||
+      activeElement.tagName === 'TEXTAREA' ||
+      activeElement.isContentEditable)
+  ) {
+    return
+  }
+
+  inputText.value = ''
+  inputText.focus()
+  updateOutput()
 })

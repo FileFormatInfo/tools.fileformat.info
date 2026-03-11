@@ -58,7 +58,17 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       <form class="mt-6 flex flex-col gap-4" action="#" method="post" onsubmit="return false;">
         <label class="form-control w-full">
           <div class="label">
+            <span class="label-text">Load from file</span>
+          </div>
+          <input id="input-file" type="file" class="file-input file-input-bordered w-full" />
+        </label>
+
+        <label class="form-control w-full">
+          <div class="label w-full items-center">
             <span class="label-text">Input text</span>
+            <button id="clear-button" type="button" class="btn btn-sm ml-auto">
+              Clear
+            </button>
           </div>
           <textarea id="input-text" class="textarea textarea-bordered min-h-40 w-full" placeholder="Paste or type text here"></textarea>
         </label>
@@ -83,6 +93,8 @@ const inputText = document.querySelector<HTMLTextAreaElement>('#input-text')
 const outputText = document.querySelector<HTMLTextAreaElement>('#output-text')
 const copyButton = document.querySelector<HTMLButtonElement>('#copy-button')
 const demoButton = document.querySelector<HTMLButtonElement>('#demo-button')
+const clearButton = document.querySelector<HTMLButtonElement>('#clear-button')
+const inputFile = document.querySelector<HTMLInputElement>('#input-file')
 
 type AnyAsciiFn = (value: string) => string
 let anyAsciiPromise: Promise<AnyAsciiFn> | undefined
@@ -107,7 +119,28 @@ const updateOutput = async () => {
 inputText?.addEventListener('input', () => {
   void updateOutput()
 })
+
+inputFile?.addEventListener('change', async () => {
+  if (!inputText) {
+    return
+  }
+
+  const [file] = inputFile.files ?? []
+  if (!file) {
+    return
+  }
+
+  try {
+    inputText.value = await file.text()
+    inputText.focus()
+    void updateOutput()
+  } finally {
+    inputFile.value = ''
+  }
+})
+
 void updateOutput()
+inputText?.focus()
 
 demoButton?.addEventListener('click', () => {
   if (!inputText) {
@@ -134,4 +167,35 @@ copyButton?.addEventListener('click', async () => {
   window.setTimeout(() => {
     copyButton.textContent = 'Copy to clipboard'
   }, 1500)
+})
+
+clearButton?.addEventListener('click', () => {
+  if (!inputText) {
+    return
+  }
+
+  inputText.value = ''
+  inputText.focus()
+  void updateOutput()
+})
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape' || !inputText) {
+    return
+  }
+
+  const activeElement = document.activeElement
+  if (
+    activeElement instanceof HTMLElement &&
+    activeElement !== inputText &&
+    (activeElement.tagName === 'INPUT' ||
+      activeElement.tagName === 'TEXTAREA' ||
+      activeElement.isContentEditable)
+  ) {
+    return
+  }
+
+  inputText.value = ''
+  inputText.focus()
+  void updateOutput()
 })
