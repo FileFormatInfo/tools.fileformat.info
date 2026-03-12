@@ -156,7 +156,7 @@ const fetchFortuneJsonp = (): Promise<string> =>
       reject(new Error('Unable to load fortune JSONP script'))
     }
 
-    script.src = `http://www.fortune.ninja/fortune/bsd_linux.json?callback=${encodeURIComponent(callbackName)}`
+    script.src = `https://www.fortune.ninja/fortune/bsd_linux.json?callback=${encodeURIComponent(callbackName)}`
     document.body.appendChild(script)
   })
 
