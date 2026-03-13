@@ -48,6 +48,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 type DetectionResult = {
   library: string
+  libraryUrl: string
   encoding: string
   confidence?: number
 }
@@ -116,6 +117,7 @@ const detectWithJschardet = async (bytes: Uint8Array): Promise<DetectionResult[]
     .filter((entry) => Boolean(entry.encoding))
     .map((entry) => ({
       library: 'jschardet',
+      libraryUrl: 'https://www.npmjs.com/package/jschardet',
       encoding: entry.encoding,
       confidence: entry.confidence ?? 0,
     }))
@@ -151,6 +153,7 @@ const detectWithEncodingJs = async (bytes: Uint8Array): Promise<DetectionResult[
   return [
     {
       library: 'encoding.js',
+      libraryUrl: 'https://www.npmjs.com/package/encoding-japanese',
       encoding: detected,
     },
   ]
@@ -166,6 +169,7 @@ const detectWithChardet = async (bytes: Uint8Array): Promise<DetectionResult[]> 
   if (analysed.length > 0) {
     return analysed.map((entry) => ({
       library: 'chardet',
+      libraryUrl: 'https://www.npmjs.com/package/chardet',
       encoding: entry.name,
       confidence: entry.confidence,
     }))
@@ -179,6 +183,7 @@ const detectWithChardet = async (bytes: Uint8Array): Promise<DetectionResult[]> 
   return [
     {
       library: 'chardet',
+      libraryUrl: 'https://www.npmjs.com/package/chardet',
       encoding: primary,
     },
   ]
@@ -194,7 +199,7 @@ const renderResults = (results: DetectionResult[], fileSize: number) => {
         .slice(0, 30)
         .map(
           (result) =>
-            `<tr><td>${result.library}</td><td>${result.encoding}</td><td class="text-right">${formatConfidence(result.confidence)}</td></tr>`,
+            `<tr><td><a class="link link-primary" href="${result.libraryUrl}">${result.library}</a></td><td>${result.encoding}</td><td class="text-right">${formatConfidence(result.confidence)}</td></tr>`,
         )
         .join('')
     : '<tr><td colspan="3">No result</td></tr>'
@@ -210,6 +215,10 @@ clearResultsButton?.addEventListener('click', () => {
 
   if (resultsSummary) {
     resultsSummary.textContent = ''
+  }
+
+  if (fileInput) {
+    fileInput.value = ''
   }
 
   resultsSection?.classList.add('hidden')
@@ -252,7 +261,6 @@ fileInput?.addEventListener('change', async () => {
   } finally {
     if (fileInput) {
       fileInput.disabled = false
-      fileInput.value = ''
     }
   }
 })

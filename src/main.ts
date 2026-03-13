@@ -60,6 +60,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
             <a href="https://github.com/FileFormatInfo/fftools/releases/latest" class="btn btn-sm">
               Downloads
             </a>
+            <a href="https://github.com/FileFormatInfo/fftools?tab=readme-ov-file#installation" class="btn btn-sm">
+              Brew
+            </a>
           </div>
         </div>
       </article>
