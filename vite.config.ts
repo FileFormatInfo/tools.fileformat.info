@@ -16,6 +16,7 @@ export default defineConfig({
         strings: resolve(__dirname, 'strings.html'),
         haikunator: resolve(__dirname, 'haikunator.html'),
         hash: resolve(__dirname, 'hash.html'),
+        chardet: resolve(__dirname, 'chardet.html'),
       },
     },
   },

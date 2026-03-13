@@ -21,7 +21,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     ${renderHeader()}
 
     <section class="rounded-box border border-base-300 bg-base-100 p-8 shadow-sm">
-      <h1 class="text-3xl font-bold">Rune Count</h1>
+      <h1 class="text-3xl font-bold">Character Count</h1>
       <p class="mt-3 text-base-content/70">Choose a text file and start counting Unicode code points.</p>
 
       <form id="runecount-form" class="mt-6 flex flex-col gap-4" action="#" method="post">
@@ -51,7 +51,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       </form>
 
       <section id="results" class="mt-8 hidden">
-        <h2 class="text-xl font-semibold">Code Point Counts</h2>
+        <h2 class="text-xl font-semibold">Character Counts</h2>
         <p id="results-summary" class="mt-2 text-base-content/70"></p>
 
         <div class="mt-4 overflow-x-auto">

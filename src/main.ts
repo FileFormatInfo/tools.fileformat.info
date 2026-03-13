@@ -18,16 +18,20 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <div>count which bytes are in a file</div>
         </div>
         <div class="flex w-full items-center gap-3">
+          <a href="/runecount.html" class="btn btn-primary w-40">Character Count</a>
+          <div>count which characters are in a file</div>
+        </div>
+        <div class="flex w-full items-center gap-3">
+          <a href="/chardet.html" class="btn btn-primary w-40">Character Set</a>
+          <div>detect likely character encoding for a file</div>
+        </div>
+        <div class="flex w-full items-center gap-3">
           <a href="/haikunator.html" class="btn btn-primary w-40">Haikunator</a>
           <div>generate random Heroku-style names</div>
         </div>
         <div class="flex w-full items-center gap-3">
           <a href="/hash.html" class="btn btn-primary w-40">Hash</a>
           <div>hash file, string, or bytes with common algorithms</div>
-        </div>
-        <div class="flex w-full items-center gap-3">
-          <a href="/runecount.html" class="btn btn-primary w-40">Rune Count</a>
-          <div>count which characters are in a file</div>
         </div>
         <div class="flex w-full items-center gap-3">
           <a href="/strings.html" class="btn btn-primary w-40">Strings</a>

@@ -14,7 +14,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
     <section class="rounded-box border border-base-300 bg-base-100 p-8 shadow-sm">
       <h1 class="text-3xl font-bold">Byte Count</h1>
-      <p class="mt-3 text-base-content/70">Choose a file and start counting bytes.</p>
+      <p class="mt-3 text-base-content/70">Choose a file to start counting bytes.</p>
 
       <form id="bytecount-form" class="mt-6 flex flex-col gap-4" action="#" method="post">
         <label class="form-control w-full">
@@ -25,14 +25,13 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         </label>
 
         <div id="form-error" class="alert alert-error hidden" role="alert" aria-live="polite"></div>
-
-        <div>
-          <button id="start-button" type="submit" class="btn btn-primary">Start</button>
-        </div>
       </form>
 
       <section id="results" class="mt-8 hidden">
-        <h2 class="text-xl font-semibold">Byte Counts</h2>
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-semibold">Byte Counts</h2>
+          <button id="clear-results-button" type="button" class="btn btn-sm ml-auto">Clear</button>
+        </div>
         <p id="results-summary" class="mt-2 text-base-content/70"></p>
 
         <div class="mt-4 overflow-x-auto">
@@ -56,13 +55,12 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 </main>
 `
 
-const form = document.querySelector<HTMLFormElement>('#bytecount-form')
 const fileInput = document.querySelector<HTMLInputElement>('#input-file')
 const formError = document.querySelector<HTMLDivElement>('#form-error')
-const startButton = document.querySelector<HTMLButtonElement>('#start-button')
 const resultsSection = document.querySelector<HTMLElement>('#results')
 const resultsSummary = document.querySelector<HTMLParagraphElement>('#results-summary')
 const resultsBody = document.querySelector<HTMLTableSectionElement>('#results-body')
+const clearResultsButton = document.querySelector<HTMLButtonElement>('#clear-results-button')
 let errorTimeoutId: number | undefined
 
 const hideError = () => {
@@ -178,9 +176,19 @@ const renderByteCountTable = (byteCounts: Map<number, ByteStats>, totalBytes: nu
   resultsSection.classList.remove('hidden')
 }
 
-form?.addEventListener('submit', async (event) => {
-  event.preventDefault()
+clearResultsButton?.addEventListener('click', () => {
+  if (resultsBody) {
+    resultsBody.innerHTML = ''
+  }
 
+  if (resultsSummary) {
+    resultsSummary.textContent = ''
+  }
+
+  resultsSection?.classList.add('hidden')
+})
+
+fileInput?.addEventListener('change', async () => {
   const selectedFile = fileInput?.files?.[0]
 
   if (!selectedFile) {
@@ -195,9 +203,8 @@ form?.addEventListener('submit', async (event) => {
 
   hideError()
 
-  if (startButton) {
-    startButton.disabled = true
-    startButton.textContent = 'Counting...'
+  if (fileInput) {
+    fileInput.disabled = true
   }
 
   try {
@@ -206,9 +213,9 @@ form?.addEventListener('submit', async (event) => {
   } catch {
     showError('Unable to read the selected file.')
   } finally {
-    if (startButton) {
-      startButton.disabled = false
-      startButton.textContent = 'Start'
+    if (fileInput) {
+      fileInput.disabled = false
+      fileInput.value = ''
     }
   }
 })
