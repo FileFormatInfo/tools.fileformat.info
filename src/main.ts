@@ -18,7 +18,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <div>count which bytes are in a file</div>
         </div>
         <div class="flex w-full items-center gap-3">
-          <a href="/runecount.html" class="btn btn-primary w-40">Character Count</a>
+          <a href="/charcount.html" class="btn btn-primary w-40">Character Count</a>
           <div>count which characters are in a file</div>
         </div>
         <div class="flex w-full items-center gap-3">

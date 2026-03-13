@@ -9,7 +9,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         bytecount: resolve(__dirname, 'bytecount.html'),
-        runecount: resolve(__dirname, 'runecount.html'),
+        charcount: resolve(__dirname, 'charcount.html'),
         asciify: resolve(__dirname, 'asciify.html'),
         upsideDown: resolve(__dirname, 'upside-down.html'),
         urlencode: resolve(__dirname, 'urlencode.html'),

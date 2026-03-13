@@ -7,7 +7,7 @@ These are some useful tools for viewing, analyzing and fixing file formats.  The
 ## Tools
 
 * [Byte count](https://tools.fileformat.info/bytecount.html) - count the byte values in a file
-* [Rune count](https://tools.fileformat.info/runecount.html) - count the characters (UTF-8, UTF-16 or Latin-1) in a file
+* [Character count](https://tools.fileformat.info/charcount.html) - count the characters (UTF-8, UTF-16 or Latin-1) in a file
 
 ## License
 

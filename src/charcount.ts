@@ -7,6 +7,11 @@ type RuneStats = {
   last: number
 }
 
+type CountRunesResult = {
+  runeCounts: Map<number, RuneStats>
+  decodeErrorCount: number
+}
+
 type CharsetKey = 'utf8' | 'utf16' | 'latin1'
 
 const charsetToEncoding: Record<CharsetKey, string> = {
@@ -22,9 +27,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
     <section class="rounded-box border border-base-300 bg-base-100 p-8 shadow-sm">
       <h1 class="text-3xl font-bold">Character Count</h1>
-      <p class="mt-3 text-base-content/70">Choose a text file and start counting Unicode code points.</p>
+      <p class="mt-3 text-base-content/70">Choose a text file to start counting Unicode code points.</p>
 
-      <form id="runecount-form" class="mt-6 flex flex-col gap-4" action="#" method="post">
+      <form id="charcount-form" class="mt-6 flex flex-col gap-4" action="#" method="post">
         <label class="form-control w-full">
           <div class="label">
             <span class="label-text">Input file</span>
@@ -44,10 +49,6 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         </label>
 
         <div id="form-error" class="alert alert-error hidden" role="alert" aria-live="polite"></div>
-
-        <div>
-          <button id="start-button" type="submit" class="btn btn-primary">Start</button>
-        </div>
       </form>
 
       <section id="results" class="mt-8 hidden">
@@ -74,11 +75,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 </main>
 `
 
-const form = document.querySelector<HTMLFormElement>('#runecount-form')
 const fileInput = document.querySelector<HTMLInputElement>('#input-file')
 const charsetSelect = document.querySelector<HTMLSelectElement>('#charset-select')
 const formError = document.querySelector<HTMLDivElement>('#form-error')
-const startButton = document.querySelector<HTMLButtonElement>('#start-button')
 const resultsSection = document.querySelector<HTMLElement>('#results')
 const resultsSummary = document.querySelector<HTMLParagraphElement>('#results-summary')
 const resultsBody = document.querySelector<HTMLTableSectionElement>('#results-body')
@@ -119,10 +118,11 @@ const showError = (message: string) => {
 
 const isCharsetKey = (value: string): value is CharsetKey => value in charsetToEncoding
 
-const countRunes = async (file: File, charset: CharsetKey): Promise<Map<number, RuneStats>> => {
+const countRunes = async (file: File, charset: CharsetKey): Promise<CountRunesResult> => {
   const runeCounts = new Map<number, RuneStats>()
   const fileBuffer = await file.arrayBuffer()
   const text = new TextDecoder(charsetToEncoding[charset]).decode(fileBuffer)
+  let decodeErrorCount = 0
 
   let runeOffset = 0
   for (const character of text) {
@@ -130,6 +130,10 @@ const countRunes = async (file: File, charset: CharsetKey): Promise<Map<number, 
 
     if (codePoint === undefined) {
       continue
+    }
+
+    if (codePoint === 0xfffd) {
+      decodeErrorCount += 1
     }
 
     const existing = runeCounts.get(codePoint)
@@ -150,7 +154,7 @@ const countRunes = async (file: File, charset: CharsetKey): Promise<Map<number, 
     runeOffset += 1
   }
 
-  return runeCounts
+  return { runeCounts, decodeErrorCount }
 }
 
 const formatOffsetHex = (offset: number): string => `0x${offset.toString(16).toUpperCase().padStart(4, '0')}`
@@ -201,7 +205,7 @@ const toCodePointUrl = (codePoint: number): string => {
   return `https://www.fileformat.info/info/unicode/char/${hex}/index.htm`
 }
 
-const renderRuneTable = (runeCounts: Map<number, RuneStats>, totalRunes: number) => {
+const renderRuneTable = (runeCounts: Map<number, RuneStats>, totalRunes: number, decodeErrorCount: number) => {
   if (!resultsBody || !resultsSummary || !resultsSection) {
     return
   }
@@ -214,23 +218,21 @@ const renderRuneTable = (runeCounts: Map<number, RuneStats>, totalRunes: number)
     )
 
   resultsBody.innerHTML = rows.join('')
-  resultsSummary.textContent = `${totalRunes.toLocaleString()} total code points, ${runeCounts.size} distinct values.`
+  const baseSummary = `${totalRunes.toLocaleString()} total code points, ${runeCounts.size} distinct values.`
+  resultsSummary.innerHTML =
+    decodeErrorCount > 0
+      ? `${baseSummary} <span class="inline-flex items-center gap-1"><span aria-hidden="true">⚠️</span><span>${decodeErrorCount.toLocaleString()} decoding errors</span></span>`
+      : baseSummary
+
   resultsSection.classList.remove('hidden')
 }
 
-form?.addEventListener('submit', async (event) => {
-  event.preventDefault()
-
+const runCount = async () => {
   const selectedFile = fileInput?.files?.[0]
   const selectedCharset = charsetSelect?.value ?? 'utf8'
 
   if (!selectedFile) {
-    if (resultsSection) {
-      resultsSection.classList.add('hidden')
-    }
-
-    showError('Please choose a file before starting.')
-
+    resultsSection?.classList.add('hidden')
     return
   }
 
@@ -241,21 +243,35 @@ form?.addEventListener('submit', async (event) => {
 
   hideError()
 
-  if (startButton) {
-    startButton.disabled = true
-    startButton.textContent = 'Counting...'
+  if (fileInput) {
+    fileInput.disabled = true
+  }
+
+  if (charsetSelect) {
+    charsetSelect.disabled = true
   }
 
   try {
-    const runeCounts = await countRunes(selectedFile, selectedCharset)
-    const totalRunes = Array.from(runeCounts.values()).reduce((total, stats) => total + stats.count, 0)
-    renderRuneTable(runeCounts, totalRunes)
+    const countResult = await countRunes(selectedFile, selectedCharset)
+    const totalRunes = Array.from(countResult.runeCounts.values()).reduce((total, stats) => total + stats.count, 0)
+    renderRuneTable(countResult.runeCounts, totalRunes, countResult.decodeErrorCount)
   } catch {
     showError('Unable to read the selected file.')
   } finally {
-    if (startButton) {
-      startButton.disabled = false
-      startButton.textContent = 'Start'
+    if (fileInput) {
+      fileInput.disabled = false
+    }
+
+    if (charsetSelect) {
+      charsetSelect.disabled = false
     }
   }
+}
+
+fileInput?.addEventListener('change', () => {
+  void runCount()
+})
+
+charsetSelect?.addEventListener('change', () => {
+  void runCount()
 })
