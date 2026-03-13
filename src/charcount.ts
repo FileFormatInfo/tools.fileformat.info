@@ -12,13 +12,51 @@ type CountRunesResult = {
   decodeErrorCount: number
 }
 
-type CharsetKey = 'utf8' | 'utf16' | 'latin1'
+const charsetOptions = [
+  { value: 'utf-8', label: 'utf-8' },
+  { value: 'utf-16le', label: 'utf-16le' },
+  { value: 'utf-16be', label: 'utf-16be' },
+  { value: 'ibm866', label: 'ibm866' },
+  { value: 'iso-8859-1', label: 'iso-8859-1' },
+  { value: 'iso-8859-2', label: 'iso-8859-2' },
+  { value: 'iso-8859-3', label: 'iso-8859-3' },
+  { value: 'iso-8859-4', label: 'iso-8859-4' },
+  { value: 'iso-8859-5', label: 'iso-8859-5' },
+  { value: 'iso-8859-6', label: 'iso-8859-6' },
+  { value: 'iso-8859-7', label: 'iso-8859-7' },
+  { value: 'iso-8859-8', label: 'iso-8859-8' },
+  { value: 'iso-8859-8-i', label: 'iso-8859-8-i' },
+  { value: 'iso-8859-10', label: 'iso-8859-10' },
+  { value: 'iso-8859-13', label: 'iso-8859-13' },
+  { value: 'iso-8859-14', label: 'iso-8859-14' },
+  { value: 'iso-8859-15', label: 'iso-8859-15' },
+  { value: 'iso-8859-16', label: 'iso-8859-16' },
+  { value: 'koi8-r', label: 'koi8-r' },
+  { value: 'koi8-u', label: 'koi8-u' },
+  { value: 'macintosh', label: 'macintosh' },
+  { value: 'windows-874', label: 'windows-874' },
+  { value: 'windows-1250', label: 'windows-1250' },
+  { value: 'windows-1251', label: 'windows-1251' },
+  { value: 'windows-1252', label: 'windows-1252' },
+  { value: 'windows-1253', label: 'windows-1253' },
+  { value: 'windows-1254', label: 'windows-1254' },
+  { value: 'windows-1255', label: 'windows-1255' },
+  { value: 'windows-1256', label: 'windows-1256' },
+  { value: 'windows-1257', label: 'windows-1257' },
+  { value: 'windows-1258', label: 'windows-1258' },
+  { value: 'x-mac-cyrillic', label: 'x-mac-cyrillic' },
+  { value: 'gbk', label: 'gbk' },
+  { value: 'gb18030', label: 'gb18030' },
+  { value: 'big5', label: 'big5' },
+  { value: 'euc-jp', label: 'euc-jp' },
+  { value: 'iso-2022-jp', label: 'iso-2022-jp' },
+  { value: 'shift_jis', label: 'shift_jis' },
+  { value: 'euc-kr', label: 'euc-kr' },
+  { value: 'x-user-defined', label: 'x-user-defined' },
+] as const
 
-const charsetToEncoding: Record<CharsetKey, string> = {
-  utf8: 'utf-8',
-  utf16: 'utf-16le',
-  latin1: 'iso-8859-1',
-}
+type CharsetKey = (typeof charsetOptions)[number]['value']
+const charsetValues = new Set<CharsetKey>(charsetOptions.map((option) => option.value))
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <main class="min-h-screen bg-base-200" data-theme="light">
@@ -41,18 +79,17 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <div class="label">
             <span class="label-text">Character set</span>
           </div>
-          <select id="charset-select" name="charset" class="select select-bordered w-full">
-            <option value="utf8" selected>UTF-8</option>
-            <option value="utf16">UTF-16</option>
-            <option value="latin1">Latin-1</option>
-          </select>
+          <select id="charset-select" name="charset" class="select select-bordered w-full"></select>
         </label>
 
         <div id="form-error" class="alert alert-error hidden" role="alert" aria-live="polite"></div>
       </form>
 
       <section id="results" class="mt-8 hidden">
-        <h2 class="text-xl font-semibold">Character Counts</h2>
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-semibold">Character Counts</h2>
+          <button id="clear-results-button" type="button" class="btn btn-sm ml-auto">Clear</button>
+        </div>
         <p id="results-summary" class="mt-2 text-base-content/70"></p>
 
         <div class="mt-4 overflow-x-auto">
@@ -81,6 +118,7 @@ const formError = document.querySelector<HTMLDivElement>('#form-error')
 const resultsSection = document.querySelector<HTMLElement>('#results')
 const resultsSummary = document.querySelector<HTMLParagraphElement>('#results-summary')
 const resultsBody = document.querySelector<HTMLTableSectionElement>('#results-body')
+const clearResultsButton = document.querySelector<HTMLButtonElement>('#clear-results-button')
 let errorTimeoutId: number | undefined
 
 const hideError = () => {
@@ -116,12 +154,18 @@ const showError = (message: string) => {
   document.addEventListener('click', hideError, { once: true })
 }
 
-const isCharsetKey = (value: string): value is CharsetKey => value in charsetToEncoding
+const isCharsetKey = (value: string): value is CharsetKey => charsetValues.has(value as CharsetKey)
+
+if (charsetSelect) {
+  charsetSelect.innerHTML = charsetOptions
+    .map((option) => `<option value="${option.value}"${option.value === 'utf-8' ? ' selected' : ''}>${option.label}</option>`)
+    .join('')
+}
 
 const countRunes = async (file: File, charset: CharsetKey): Promise<CountRunesResult> => {
   const runeCounts = new Map<number, RuneStats>()
   const fileBuffer = await file.arrayBuffer()
-  const text = new TextDecoder(charsetToEncoding[charset]).decode(fileBuffer)
+  const text = new TextDecoder(charset).decode(fileBuffer)
   let decodeErrorCount = 0
 
   let runeOffset = 0
@@ -229,7 +273,7 @@ const renderRuneTable = (runeCounts: Map<number, RuneStats>, totalRunes: number,
 
 const runCount = async () => {
   const selectedFile = fileInput?.files?.[0]
-  const selectedCharset = charsetSelect?.value ?? 'utf8'
+  const selectedCharset = charsetSelect?.value ?? 'utf-8'
 
   if (!selectedFile) {
     resultsSection?.classList.add('hidden')
@@ -267,6 +311,18 @@ const runCount = async () => {
     }
   }
 }
+
+clearResultsButton?.addEventListener('click', () => {
+  if (resultsBody) {
+    resultsBody.innerHTML = ''
+  }
+
+  if (resultsSummary) {
+    resultsSummary.textContent = ''
+  }
+
+  resultsSection?.classList.add('hidden')
+})
 
 fileInput?.addEventListener('change', () => {
   void runCount()

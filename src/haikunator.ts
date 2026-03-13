@@ -30,7 +30,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <div class="label">
             <span class="label-text">Token characters</span>
           </div>
-          <input id="token-chars" type="text" value="0123456789" class="input input-bordered w-full" />
+          <input id="token-chars" type="text" value="23456789" class="input input-bordered w-full" />
         </label>
 
         <label class="form-control w-full">
@@ -41,8 +41,13 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         </label>
 
         <label class="form-control w-full md:col-span-2">
-          <div class="label">
+          <div class="label w-full">
             <span class="label-text">Generated names</span>
+            <button id="regenerate-button" type="button" class="btn btn-xs ml-auto" title="Regenerate names" aria-label="Regenerate names">
+              <span class="block h-4 w-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"></path><path d="M3 8a9 9 0 0 1 14.12-3.12L21 8"></path><path d="M21 22v-6h-6"></path><path d="M21 16a9 9 0 0 1-14.12 3.12L3 16"></path></svg>
+              </span>
+            </button>
           </div>
           <div id="output-list" class="w-full rounded-box border border-base-300 bg-base-200 p-3"></div>
         </label>
@@ -62,7 +67,13 @@ const tokenCharsInput = document.querySelector<HTMLInputElement>('#token-chars')
 const nameCountInput = document.querySelector<HTMLInputElement>('#name-count')
 const outputList = document.querySelector<HTMLDivElement>('#output-list')
 const copyAllButton = document.querySelector<HTMLButtonElement>('#copy-all-button')
+const regenerateButton = document.querySelector<HTMLButtonElement>('#regenerate-button')
 let generatedNames: string[] = []
+
+const defaultDelimiter = '-'
+const defaultTokenLength = 4
+const defaultTokenChars = '23456789'
+const defaultNameCount = 10
 
 const copyIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path><path d="M16 4h2a2 2 0 0 1 2 2v4"></path><path d="M21 14H11"></path><path d="m15 10-4 4 4 4"></path></svg>'
 
@@ -80,6 +91,81 @@ const clampInteger = (value: number, min: number): number => {
   }
 
   return Math.max(min, Math.floor(value))
+}
+
+const loadFromQuery = () => {
+  if (!delimiterInput || !tokenLengthInput || !tokenCharsInput || !nameCountInput) {
+    return
+  }
+
+  const params = new URLSearchParams(window.location.search)
+
+  const delimiter = params.get('delimiter')
+  if (delimiter !== null) {
+    delimiterInput.value = delimiter
+  }
+
+  const tokenLength = params.get('tokenLength')
+  if (tokenLength !== null) {
+    const parsed = Number(tokenLength)
+    if (Number.isFinite(parsed)) {
+      tokenLengthInput.value = String(clampInteger(parsed, 0))
+    }
+  }
+
+  const tokenChars = params.get('tokenChars')
+  if (tokenChars !== null) {
+    tokenCharsInput.value = tokenChars
+  }
+
+  const nameCount = params.get('nameCount')
+  if (nameCount !== null) {
+    const parsed = Number(nameCount)
+    if (Number.isFinite(parsed)) {
+      nameCountInput.value = String(clampInteger(parsed, 1))
+    }
+  }
+}
+
+const updateQueryFromInputs = () => {
+  if (!delimiterInput || !tokenLengthInput || !tokenCharsInput || !nameCountInput) {
+    return
+  }
+
+  const params = new URLSearchParams(window.location.search)
+
+  const delimiter = delimiterInput.value
+  const tokenLength = String(clampInteger(Number(tokenLengthInput.value), 0))
+  const tokenChars = tokenCharsInput.value || defaultTokenChars
+  const nameCount = String(clampInteger(Number(nameCountInput.value), 1))
+
+  if (delimiter === defaultDelimiter) {
+    params.delete('delimiter')
+  } else {
+    params.set('delimiter', delimiter)
+  }
+
+  if (tokenLength === String(defaultTokenLength)) {
+    params.delete('tokenLength')
+  } else {
+    params.set('tokenLength', tokenLength)
+  }
+
+  if (tokenChars === defaultTokenChars) {
+    params.delete('tokenChars')
+  } else {
+    params.set('tokenChars', tokenChars)
+  }
+
+  if (nameCount === String(defaultNameCount)) {
+    params.delete('nameCount')
+  } else {
+    params.set('nameCount', nameCount)
+  }
+
+  const query = params.toString()
+  const nextUrl = query ? `${window.location.pathname}?${query}${window.location.hash}` : `${window.location.pathname}${window.location.hash}`
+  window.history.replaceState(null, '', nextUrl)
 }
 
 const renderNames = () => {
@@ -103,7 +189,7 @@ const generateNames = () => {
   const delimiter = delimiterInput.value
   const tokenLength = clampInteger(Number(tokenLengthInput.value), 0)
   const nameCount = clampInteger(Number(nameCountInput.value), 1)
-  const tokenChars = tokenCharsInput.value || '0123456789'
+  const tokenChars = tokenCharsInput.value || defaultTokenChars
 
   const haikunator = new Haikunator()
   const names: string[] = []
@@ -124,7 +210,10 @@ const generateNames = () => {
 
 const inputs = [delimiterInput, tokenLengthInput, tokenCharsInput, nameCountInput]
 for (const input of inputs) {
-  input?.addEventListener('input', generateNames)
+  input?.addEventListener('input', () => {
+    updateQueryFromInputs()
+    generateNames()
+  })
 }
 
 outputList?.addEventListener('click', async (event) => {
@@ -174,4 +263,10 @@ copyAllButton?.addEventListener('click', async () => {
   }, 1500)
 })
 
+regenerateButton?.addEventListener('click', () => {
+  generateNames()
+})
+
+loadFromQuery()
+updateQueryFromInputs()
 generateNames()
